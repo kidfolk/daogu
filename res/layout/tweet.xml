@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:background="#d3d3d3"
+		android:layout_gravity="top">
+		<ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/back"
+			android:src="@drawable/back"
+			android:paddingLeft="10.0dip" />
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:textSize="17.0sp"
+			android:layout_weight="1.0"
+			android:visibility="invisible" />
+		<Button
+			android:id="@+id/tweet"
+			android:layout_width="wrap_content"
+			android:text="@string/tweet"
+			android:layout_height="wrap_content"
+			android:paddingRight="10.0dip"></Button>
+	</LinearLayout>
+	<EditText
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:minLines="10"
+		android:id="@+id/weiboContent"
+		android:hint="说点儿什么吧..."
+		android:gravity="top"
+		android:layout_gravity="center_vertical"
+		android:focusable="true" />
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:background="#d3d3d3"
+		android:layout_gravity="bottom">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:id="@+id/location"
+			android:src="@drawable/btn_insert_location" />
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:id="@+id/picture"
+			android:src="@drawable/btn_insert_pic" />
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:id="@+id/topic"
+			android:src="@drawable/btn_insert_topic" />
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:id="@+id/at"
+			android:src="@drawable/btn_insert_at" />
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:id="@+id/lol"
+			android:src="@drawable/btn_insert_face" />
+
+	</LinearLayout>
+</LinearLayout>

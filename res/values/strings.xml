@@ -3,5 +3,9 @@
     <string name="hello">Hello World, JustdaoguActivity!</string>
     <string name="app_name">Justdaogu</string>
     <string name="scheme">daogu</string>
-    <string name="host">WeiboListActivity</string>
+    <string name="WeiboListHost">WeiboListActivity</string>
+    <string name="TweetWeiboHost">TweetWeiboActivity</string>
+    <string name="ReplyWeiboHost">ReplyWeiboActivity</string>
+    <string name="tweet">发送</string>
+    <string name="reply">回复</string>
 </resources>

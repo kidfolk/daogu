@@ -5,15 +5,16 @@
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="horizontal"
 		android:background="#d3d3d3" android:gravity="center">
-		<ImageView android:layout_width="wrap_content"
+		<ImageButton android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/tweet"
-			android:paddingRight="10.0dip" android:src="@drawable/edit" />
+			android:paddingLeft="10.0dip" android:src="@drawable/edit" android:background="#d3d3d3"/>
 		<TextView android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:gravity="center_horizontal"
 			android:textSize="17.0sp" android:layout_weight="1.0" android:id="@+id/screenname" />
-		<ImageView android:id="@+id/refresh" android:layout_width="wrap_content"
+		<ImageButton android:id="@+id/refresh" android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:src="@drawable/refresh" />
+			android:paddingRight="10.0dip"
+			android:src="@drawable/refresh" android:background="#d3d3d3"/>
 	</LinearLayout>
 
 	<ListView android:layout_width="fill_parent"
@@ -22,7 +23,6 @@
 		android:background="#fff4f4f4"
 		android:divider="@drawable/divider_horizontal_timeline"
 		android:dividerHeight="1.0dip">
-
 	</ListView>
 </LinearLayout>
 

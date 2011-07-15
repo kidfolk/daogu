@@ -2,7 +2,7 @@ package com.kidfolk.daogu;
 
 import java.util.List;
 /**
- * xml文件操作接口，xml文件存取用户数据
+ * xml文件操作接口
  * @author kidfolk
  *
  * @param <T>

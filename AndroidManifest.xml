@@ -17,7 +17,26 @@
         <activity android:name="WeiboListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"></action>
-                <data android:scheme="@string/scheme" android:host="@string/host"></data>
+                <data android:scheme="@string/scheme" android:host="@string/WeiboListHost"></data>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="TweetWeiboActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <action android:name="com.kidfolk.daogu.TWEET"></action>
+                <data android:scheme="@string/scheme" android:host="@string/TweetWeiboHost"></data>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
+        <activity android:name="ReplyWeiboActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <action android:name="com.kidfolk.daogu.REPLY"></action>
+                <data android:scheme="@string/scheme" android:host="@string/ReplyWeiboHost"></data>
                 <category android:name="android.intent.category.BROWSABLE"></category>
                 <category android:name="android.intent.category.DEFAULT"></category>
             </intent-filter>

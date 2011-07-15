@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="#fff4f4f4">
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:background="#d3d3d3"
+		android:layout_gravity="top">
+		<ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/cancel"
+			android:src="@drawable/back"
+			android:paddingLeft="10.0dip" />
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+			android:textSize="17.0sp"
+			android:layout_weight="1.0"
+			android:visibility="invisible" />
+		<Button
+			android:id="@+id/reply"
+			android:layout_width="wrap_content"
+			android:text="@string/reply"
+			android:layout_height="wrap_content"
+			android:paddingRight="10.0dip"></Button>
+	</LinearLayout>
+	<EditText
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:minLines="10"
+		android:id="@+id/replyContent"
+		android:hint="说点儿什么吧..."
+		android:gravity="top"
+		android:layout_gravity="center_vertical"
+		android:focusable="true" />
+
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="14.0sp"
+			android:id="@+id/screenname"
+			android:textColor="#ff0099cc"
+			android:layout_margin="3.0dip"
+			android:layout_weight="1.0" />
+		<!-- <TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="14.0sp"
+			android:id="@+id/create_at"
+			android:textColor="#ff999999"
+			android:layout_margin="3.0dip"
+			android:layout_weight="1.0"
+			android:gravity="right" /> -->
+	</LinearLayout>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="3.0dip"
+		android:textSize="16.0sp"
+		android:textColor="#ff000000"
+		android:id="@+id/text"
+		android:autoLink="web" />
+</LinearLayout>

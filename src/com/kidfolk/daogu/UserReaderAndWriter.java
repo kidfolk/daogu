@@ -13,7 +13,11 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.util.Xml;
-
+/**
+ * 读写用户xml文件
+ * @author kidfolk
+ *
+ */
 public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 
 	private static final String FILENAME = "users.xml";
@@ -23,6 +27,9 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 		this.context = context;
 	}
 
+	/**
+	 * 从xml文件中解析出用户信息
+	 */
 	@Override
 	public List<User> reader() {
 		List<User> userList = null;
@@ -30,8 +37,9 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 		FileInputStream fis = null;
 		try {
 			File file = context.getFileStreamPath(FILENAME);
-			file.createNewFile();
-			if(file.length()>0){
+			boolean flag = file.createNewFile();
+			if (!flag) {
+				// 文件已经存在
 				fis = context.openFileInput(FILENAME);
 				parser.setInput(fis, null);
 				int eventType = parser.getEventType();
@@ -70,22 +78,24 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 					eventType = parser.next();
 				}
 			}
-			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}finally{
-			if(null!=fis){
+		} finally {
+			if (null != fis) {
 				try {
 					fis.close();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
-			
+
 		}
 		return userList;
 	}
 
+	/**
+	 * 往xml文件中写入用户信息
+	 */
 	@Override
 	public void writer(List<User> userList) {
 		XmlSerializer serializer = Xml.newSerializer();

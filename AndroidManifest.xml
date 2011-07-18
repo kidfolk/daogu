@@ -41,6 +41,7 @@
                 <category android:name="android.intent.category.DEFAULT"></category>
             </intent-filter>
         </activity>
+        <service android:name="GetWeiboService"></service>
 
     </application>
 </manifest>

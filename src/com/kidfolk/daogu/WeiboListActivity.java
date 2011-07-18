@@ -3,6 +3,8 @@ package com.kidfolk.daogu;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kidfolk.daogu.GetWeiboService.WeiboBinder;
+
 import weibo4android.Paging;
 import weibo4android.Status;
 import weibo4android.Weibo;
@@ -10,10 +12,13 @@ import weibo4android.WeiboException;
 import weibo4android.http.AccessToken;
 import weibo4android.http.RequestToken;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -33,6 +38,10 @@ public class WeiboListActivity extends ListActivity {
 	public static final int RETWEET_FAILURE = 2;
 	public static final int GETWEIBOLIST_OK = 3;
 	public static final int REPLY_REQUEST = 4;
+	public static final int GET_NEW_WEIBO = 5;
+
+	private WeiboServiceConnection connection = new WeiboServiceConnection();
+	private List<Status> statusList;
 	// public static final int RESULT_FAUILE = 1;
 
 	private ImageButton tweet;
@@ -57,20 +66,22 @@ public class WeiboListActivity extends ListActivity {
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
-				//处理获取主页微博消息
+				// 处理获取主页微博消息
 				case GETWEIBOLIST_OK:
 					DaoguAdapter adapter = new DaoguAdapter(
 							WeiboListActivity.this.getApplicationContext(),
 							(List<Status>) msg.obj);
 					WeiboListActivity.this.setListAdapter(adapter);
 					break;
-					//处理转发成功消息
+				// 处理转发成功消息
 				case RETWEET_OK:
-					Toast.makeText(WeiboListActivity.this, "转发成功！", Toast.LENGTH_SHORT).show();
+					Toast.makeText(WeiboListActivity.this, "转发成功！",
+							Toast.LENGTH_SHORT).show();
 					break;
-					//处理转发失败消息
+				// 处理转发失败消息
 				case RETWEET_FAILURE:
-					Toast.makeText(WeiboListActivity.this, "转发失败！", Toast.LENGTH_SHORT).show();
+					Toast.makeText(WeiboListActivity.this, "转发失败！",
+							Toast.LENGTH_SHORT).show();
 					break;
 				}
 			}
@@ -82,6 +93,43 @@ public class WeiboListActivity extends ListActivity {
 		/* 显示我的微博和关注人的微博 */
 
 		getMyHomeTimeLine();
+
+	}
+
+	// @Override
+	// protected void onStart() {
+	// super.onStart();
+	// // 绑定服务
+	// bindService(new Intent(this, GetWeiboService.class), connection,
+	// BIND_AUTO_CREATE);
+	// }
+
+	// @Override
+	// protected void onDestroy() {
+	// super.onDestroy();
+	// unbindService(connection);
+	// }
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unbindService(connection);
+	}
+
+	class WeiboServiceConnection implements ServiceConnection {
+
+		@Override
+		public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+			WeiboBinder binder = (WeiboBinder) arg1;
+			binder.getService().startGetNewWeibo(statusList);
+
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 
 	private void init() {
@@ -133,8 +181,12 @@ public class WeiboListActivity extends ListActivity {
 			@Override
 			public void run() {
 				try {
-					List<Status> statusList = weibo.getHomeTimeline();
+					statusList = weibo.getHomeTimeline();
 					if (null != statusList & statusList.size() > 0) {
+						// 绑定服务
+						bindService(new Intent(WeiboListActivity.this,
+								GetWeiboService.class), connection,
+								BIND_AUTO_CREATE);
 						// 取得weibo数据
 						Message msg = new Message();
 						msg.obj = statusList;
@@ -198,12 +250,12 @@ public class WeiboListActivity extends ListActivity {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
 		int id = item.getItemId();
-		//获得选中的微博
-		final Status status = (Status) this.getListView()
-		.getItemAtPosition(info.position);
+		// 获得选中的微博
+		final Status status = (Status) this.getListView().getItemAtPosition(
+				info.position);
 		switch (id) {
 		case R.id.retweet:
-			
+
 			new Thread(new Runnable() {
 
 				@Override
@@ -229,7 +281,8 @@ public class WeiboListActivity extends ListActivity {
 
 			return true;
 		case R.id.reply:
-			Intent intent = new Intent("com.kidfolk.daogu.REPLY",Uri.parse("daogu://ReplyWeiboActivity"));
+			Intent intent = new Intent("com.kidfolk.daogu.REPLY",
+					Uri.parse("daogu://ReplyWeiboActivity"));
 			intent.putExtra("status", status);
 			startActivityForResult(intent, REPLY_REQUEST);
 			return true;

@@ -18,7 +18,7 @@ import android.util.Xml;
  * @author kidfolk
  *
  */
-public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
+public class UserReaderAndWriter implements XMLReaderAndWriter<UserOAuth> {
 
 	private static final String FILENAME = "users.xml";
 	private Context context;
@@ -31,8 +31,8 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 	 * 从xml文件中解析出用户信息
 	 */
 	@Override
-	public List<User> reader() {
-		List<User> userList = null;
+	public List<UserOAuth> reader() {
+		List<UserOAuth> userList = null;
 		XmlPullParser parser = Xml.newPullParser();
 		FileInputStream fis = null;
 		try {
@@ -43,18 +43,18 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 				fis = context.openFileInput(FILENAME);
 				parser.setInput(fis, null);
 				int eventType = parser.getEventType();
-				User user = null;
+				UserOAuth user = null;
 				boolean done = false;
 				while (eventType != XmlPullParser.END_DOCUMENT && !done) {
 					String tagname = null;
 					switch (eventType) {
 					case XmlPullParser.START_DOCUMENT:
-						userList = new ArrayList<User>();
+						userList = new ArrayList<UserOAuth>();
 						break;
 					case XmlPullParser.START_TAG:
 						tagname = parser.getName();
 						if (tagname.equalsIgnoreCase("user")) {
-							user = new User();
+							user = new UserOAuth();
 						} else if (user != null) {
 							if (tagname.equalsIgnoreCase("id")) {
 								user.setId(parser.nextText());
@@ -97,7 +97,7 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 	 * 往xml文件中写入用户信息
 	 */
 	@Override
-	public void writer(List<User> userList) {
+	public void writer(List<UserOAuth> userList) {
 		XmlSerializer serializer = Xml.newSerializer();
 		StringWriter writer = new StringWriter();
 		FileOutputStream fos = null;
@@ -106,7 +106,7 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<User> {
 			serializer.setOutput(writer);
 			serializer.startDocument("UTF-8", true);
 			serializer.startTag("", "users");
-			for (User user : userList) {
+			for (UserOAuth user : userList) {
 				serializer.startTag("", "user");
 				serializer.startTag("", "id");
 				serializer.text(user.getId());

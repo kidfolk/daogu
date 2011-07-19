@@ -51,12 +51,12 @@ public class JustdaoguActivity extends Activity {
 			@Override
 			public void run() {
 				// 查询user.xml,操作文件
-				XMLReaderAndWriter<User> userreader = new UserReaderAndWriter(
+				XMLReaderAndWriter<UserOAuth> userreader = new UserReaderAndWriter(
 						getApplicationContext());
-				List<User> userList = userreader.reader();
+				List<UserOAuth> userList = userreader.reader();
 				if (null != userList && userList.size() > 0) {
 					// 有用户
-					User user = userList.get(0);
+					UserOAuth user = userList.get(0);
 					AccessToken accessToken = new AccessToken(user
 							.getAccesstoken(), user.getAccesstoken_secret());
 

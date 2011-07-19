@@ -39,6 +39,7 @@ public class WeiboListActivity extends ListActivity {
 	public static final int GETWEIBOLIST_OK = 3;
 	public static final int REPLY_REQUEST = 4;
 	public static final int GET_NEW_WEIBO = 5;
+	public static final int REFRESHWEIBOLIST_OK = 6;
 
 	private WeiboServiceConnection connection = new WeiboServiceConnection();
 	private List<Status> statusList;
@@ -62,16 +63,31 @@ public class WeiboListActivity extends ListActivity {
 		tweet.setOnClickListener(listener);
 		refresh.setOnClickListener(listener);
 
+		/* 消息处理 */
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
+				// List datas = (List) msg.obj;
 				switch (msg.what) {
 				// 处理获取主页微博消息
 				case GETWEIBOLIST_OK:
 					DaoguAdapter adapter = new DaoguAdapter(
 							WeiboListActivity.this.getApplicationContext(),
-							(List<Status>) msg.obj);
+							statusList);
+					// adapter.notifyDataSetChanged();
 					WeiboListActivity.this.setListAdapter(adapter);
+					break;
+				// 处理更新消息
+				case REFRESHWEIBOLIST_OK:
+					// DaoguAdapter newadapter = (DaoguAdapter)
+					// WeiboListActivity.this
+					// .getListAdapter();
+					// newadapter.notifyDataSetChanged();
+					DaoguAdapter newadapter = new DaoguAdapter(
+							WeiboListActivity.this.getApplicationContext(),
+							statusList);
+					// adapter.notifyDataSetChanged();
+					WeiboListActivity.this.setListAdapter(newadapter);
 					break;
 				// 处理转发成功消息
 				case RETWEET_OK:
@@ -86,29 +102,18 @@ public class WeiboListActivity extends ListActivity {
 				}
 			}
 		};
+
 		weibo = OAuthConstant.getInstance().getWeibo();
 		registerForContextMenu(this.findViewById(android.R.id.list));
 		// 初始化
 		init();
+
 		/* 显示我的微博和关注人的微博 */
 
-		getMyHomeTimeLine();
+		getMyHomeTimeLine(null);
 
 	}
 
-	// @Override
-	// protected void onStart() {
-	// super.onStart();
-	// // 绑定服务
-	// bindService(new Intent(this, GetWeiboService.class), connection,
-	// BIND_AUTO_CREATE);
-	// }
-
-	// @Override
-	// protected void onDestroy() {
-	// super.onDestroy();
-	// unbindService(connection);
-	// }
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -132,6 +137,9 @@ public class WeiboListActivity extends ListActivity {
 
 	}
 
+	/**
+	 * 初始化，处理已经授权和没有授权两种情况
+	 */
 	private void init() {
 		new Thread(new Runnable() {
 
@@ -155,13 +163,13 @@ public class WeiboListActivity extends ListActivity {
 						OAuthConstant.getInstance().setAccessToken(accessToken);
 						OAuthConstant.getInstance().setTokenSecret(
 								accessToken.getTokenSecret());
-						User user = new User();
+						UserOAuth user = new UserOAuth();
 						user.setId(String.valueOf(accessToken.getUserId()));
 						user.setAccesstoken(accessToken.getToken());
 						user.setAccesstoken_secret(accessToken.getTokenSecret());
-						List<User> userList = new ArrayList<User>();
+						List<UserOAuth> userList = new ArrayList<UserOAuth>();
 						userList.add(user);
-						XMLReaderAndWriter<User> writer = new UserReaderAndWriter(
+						XMLReaderAndWriter<UserOAuth> writer = new UserReaderAndWriter(
 								getApplicationContext());
 						writer.writer(userList);
 					} catch (WeiboException e) {
@@ -175,24 +183,42 @@ public class WeiboListActivity extends ListActivity {
 
 	}
 
-	private void getMyHomeTimeLine() {
+	/**
+	 * 得到主页的微博
+	 */
+	private void getMyHomeTimeLine(final Paging paging) {
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				try {
-					statusList = weibo.getHomeTimeline();
-					if (null != statusList & statusList.size() > 0) {
+					if (null == paging) {
+						// 第一次请求
+						statusList = weibo.getHomeTimeline(paging);
 						// 绑定服务
-						bindService(new Intent(WeiboListActivity.this,
-								GetWeiboService.class), connection,
-								BIND_AUTO_CREATE);
-						// 取得weibo数据
-						Message msg = new Message();
-						msg.obj = statusList;
-						msg.what = GETWEIBOLIST_OK;
-						WeiboListActivity.this.handler.sendMessage(msg);
+						// bindService(new Intent(WeiboListActivity.this,
+						// GetWeiboService.class), connection,
+						// BIND_AUTO_CREATE);
+						if (null != statusList & statusList.size() > 0) {
+							Message msg = new Message();
+							msg.what = GETWEIBOLIST_OK;
+							WeiboListActivity.this.handler.sendMessage(msg);
+						}
+					} else {
+						int a = statusList.size();
+						// 刷新的时候，将新微博加入到列表中
+						statusList.addAll(weibo.getHomeTimeline(paging));
+						int b = statusList.size();
+						if (b > a) {
+							// DaoguAdapter adapter = (DaoguAdapter)
+							// WeiboListActivity.this.getListAdapter();
+							// adapter.setList(statusList);
+							Message msg = new Message();
+							msg.what = REFRESHWEIBOLIST_OK;
+							WeiboListActivity.this.handler.sendMessage(msg);
+						}
 					}
+
 				} catch (WeiboException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -221,7 +247,13 @@ public class WeiboListActivity extends ListActivity {
 				startActivityForResult(intent, TWEET_REQUEST);
 				break;
 			case R.id.refresh:
-				getMyHomeTimeLine();
+				Paging paging = new Paging();
+				if (null == statusList) {
+
+				} else {
+					paging.setSinceId(statusList.get(0).getId());
+				}
+				getMyHomeTimeLine(paging);
 				break;
 			}
 
@@ -237,13 +269,6 @@ public class WeiboListActivity extends ListActivity {
 					.show();
 		}
 	}
-
-	// @Override
-	// protected void onListItemClick(ListView l, View v, int position, long id)
-	// {
-	// Status status = (Status) l.getItemAtPosition(position);
-	// status.getId();
-	// }
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {

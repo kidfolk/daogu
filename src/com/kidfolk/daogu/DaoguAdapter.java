@@ -11,6 +11,7 @@ import weibo4android.RetweetDetails;
 import weibo4android.Status;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -36,6 +37,10 @@ public class DaoguAdapter extends BaseAdapter {
 	public int getCount() {
 
 		return list.size();
+	}
+
+	public void setList(List<Status> list) {
+		this.list = list;
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -195,6 +196,7 @@ public class WeiboListActivity extends ListActivity {
 					if (null == paging) {
 						// 第一次请求
 						statusList = weibo.getHomeTimeline(paging);
+						Log.d(LOG_TAG, "weibo list size : " + statusList.size());
 						// 绑定服务
 						// bindService(new Intent(WeiboListActivity.this,
 						// GetWeiboService.class), connection,
@@ -328,5 +330,7 @@ public class WeiboListActivity extends ListActivity {
 		MenuInflater menuInflater = getMenuInflater();
 		menuInflater.inflate(R.menu.weibo_context_menu, menu);
 	}
+	
+	private static final String LOG_TAG = "WeiboListActivity";
 
 }

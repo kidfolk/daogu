@@ -1,47 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.kidfolk.daogu"
-      android:versionCode="1"
-      android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="8" />
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.kidfolk.daogu"
+	android:versionCode="1"
+	android:versionName="1.0">
+	<uses-sdk android:minSdkVersion="8" />
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
-        <activity android:name=".JustdaoguActivity"
-                  android:label="@string/app_name" android:theme="@android:style/Theme.Wallpaper">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name="WeiboListActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <data android:scheme="@string/scheme" android:host="@string/WeiboListHost"></data>
-                <category android:name="android.intent.category.BROWSABLE"></category>
-                <category android:name="android.intent.category.DEFAULT"></category>
-            </intent-filter>
-        </activity>
-        
-        <activity android:name="TweetWeiboActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <action android:name="com.kidfolk.daogu.TWEET"></action>
-                <data android:scheme="@string/scheme" android:host="@string/TweetWeiboHost"></data>
-                <category android:name="android.intent.category.BROWSABLE"></category>
-                <category android:name="android.intent.category.DEFAULT"></category>
-            </intent-filter>
-        </activity>
-        <activity android:name="ReplyWeiboActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <action android:name="com.kidfolk.daogu.REPLY"></action>
-                <data android:scheme="@string/scheme" android:host="@string/ReplyWeiboHost"></data>
-                <category android:name="android.intent.category.BROWSABLE"></category>
-                <category android:name="android.intent.category.DEFAULT"></category>
-            </intent-filter>
-        </activity>
-        <service android:name="GetWeiboService"></service>
+	<application
+		android:icon="@drawable/icon"
+		android:label="@string/app_name"
+		android:theme="@android:style/Theme.NoTitleBar"
+		xmlns:app="http://schemas.android.com/apk/res/com.kidfolk.daogu">
+		<activity
+			android:name=".SplashActivity"
+			android:label="@string/app_name"
+			android:theme="@android:style/Theme.Wallpaper.NoTitleBar.Fullscreen">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name="WeiboListActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"></action>
+				<data
+					android:scheme="@string/scheme"
+					android:host="@string/WeiboListHost"></data>
+				<category android:name="android.intent.category.BROWSABLE"></category>
+				<category android:name="android.intent.category.DEFAULT"></category>
+			</intent-filter>
+		</activity>
 
-    </application>
+		<activity android:name="TweetWeiboActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"></action>
+				<action android:name="com.kidfolk.daogu.TWEET"></action>
+				<data
+					android:scheme="@string/scheme"
+					android:host="@string/TweetWeiboHost"></data>
+				<category android:name="android.intent.category.BROWSABLE"></category>
+				<category android:name="android.intent.category.DEFAULT"></category>
+			</intent-filter>
+		</activity>
+		<activity android:name=".ReplyWeiboActivity">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"></action>
+				<action android:name="com.kidfolk.daogu.REPLY"></action>
+				<data
+					android:scheme="@string/scheme"
+					android:host="@string/ReplyWeiboHost"></data>
+				<category android:name="android.intent.category.BROWSABLE"></category>
+				<category android:name="android.intent.category.DEFAULT"></category>
+			</intent-filter>
+		</activity>
+		<service android:name=".GetWeiboService"></service>
+
+	</application>
 </manifest>

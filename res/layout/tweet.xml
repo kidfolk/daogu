@@ -4,7 +4,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
-	<LinearLayout
+	<!-- <LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
@@ -29,17 +29,21 @@
 			android:text="@string/tweet"
 			android:layout_height="wrap_content"
 			android:paddingRight="10.0dip"></Button>
-	</LinearLayout>
+	</LinearLayout> -->
+	<com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar"
+        style="@style/ActionBar"
+        />
 	<EditText
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="fill_parent"
 		android:minLines="10"
 		android:id="@+id/weiboContent"
 		android:hint="说点儿什么吧..."
 		android:gravity="top"
 		android:layout_gravity="center_vertical"
 		android:focusable="true" />
-	<LinearLayout
+	<!-- <LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
@@ -76,5 +80,5 @@
 			android:id="@+id/lol"
 			android:src="@drawable/btn_insert_face" />
 
-	</LinearLayout>
+	</LinearLayout> -->
 </LinearLayout>

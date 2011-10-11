@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kidfolk.daogu.GetWeiboService.WeiboBinder;
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
+import com.markupartist.android.widget.ActionBar.IntentAction;
 
 import weibo4android.Paging;
 import weibo4android.Status;
@@ -13,9 +17,11 @@ import weibo4android.http.AccessToken;
 import weibo4android.http.RequestToken;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -42,12 +48,12 @@ public class WeiboListActivity extends ListActivity {
 	public static final int GET_NEW_WEIBO = 5;
 	public static final int REFRESHWEIBOLIST_OK = 6;
 
-	private WeiboServiceConnection connection = new WeiboServiceConnection();
+//	private WeiboServiceConnection connection = new WeiboServiceConnection();
 	private List<Status> statusList;
 	// public static final int RESULT_FAUILE = 1;
 
-	private ImageButton tweet;
-	private ImageButton refresh;
+//	private ImageButton tweet;
+//	private ImageButton refresh;
 	private Handler handler;
 
 	@Override
@@ -55,14 +61,17 @@ public class WeiboListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		// 根据id获得view对象
-		tweet = (ImageButton) findViewById(R.id.tweet);
-		refresh = (ImageButton) findViewById(R.id.refresh);
-		// 创建监听器内部类对象
-		ImageButtonListener listener = new ImageButtonListener();
-		// 给ImageButton添加事件
-		tweet.setOnClickListener(listener);
-		refresh.setOnClickListener(listener);
+		actionBar = (ActionBar) findViewById(R.id.actionbar);
+		actionBar.setTitle("捣鼓");
+		actionBar.addAction(new IntentAction(this, createTweetIntent(), R.drawable.edit));
+		PullToRefreshListView pullRefreshList = (PullToRefreshListView) getListView();
+		pullRefreshList.setOnRefreshListener(new OnRefreshListener(){
+
+			@Override
+			public void onRefresh() {
+				new GetDataTask().execute(statusList);
+				
+			}});
 
 		/* 消息处理 */
 		handler = new Handler() {
@@ -114,29 +123,94 @@ public class WeiboListActivity extends ListActivity {
 		getMyHomeTimeLine(null);
 
 	}
+	
+	
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+//		WeiboCachedDatabase weibo_cached_database = new WeiboCachedDatabase(this);
+//		weibo_cached_database.insertToStatus(statusList);
+//		weibo_cached_database.close();
+	}
+
+
+
+	private Intent createTweetIntent() {
+		Intent intent = new Intent("com.kidfolk.daogu.TWEET",
+				Uri.parse("daogu://TweetWeiboActivity"));
+		return intent;
+	}
+
+	private class GetDataTask extends AsyncTask<List<Status>,Void,List<Status>>{
+		
+
+		@Override
+		protected void onPreExecute() {
+			actionBar.setProgressBarVisibility(View.VISIBLE);
+		}
+
+		@Override
+		protected void onPostExecute(List<weibo4android.Status> result) {
+			statusList.addAll(0, result);
+			Log.d(LOG_TAG, "status list size : "+statusList.size());
+			PullToRefreshListView pullRefreshList = (PullToRefreshListView) getListView();
+			pullRefreshList.onRefreshComplete();
+			DaoguAdapter newadapter = new DaoguAdapter(
+					WeiboListActivity.this.getApplicationContext(),
+					statusList);
+			// adapter.notifyDataSetChanged();
+			WeiboListActivity.this.setListAdapter(newadapter);
+			actionBar.setProgressBarVisibility(View.GONE);
+		}
+
+		@Override
+		protected List<weibo4android.Status> doInBackground(
+				List<weibo4android.Status>... params) {
+			Paging paging = null;
+			if(null!=params&&params.length>0){
+				paging = new Paging();
+				List<weibo4android.Status> status = params[0];
+				Log.d(LOG_TAG, "sinceid : "+status.get(0).getId());
+				paging.setSinceId(status.get(0).getId());
+			}
+			List<weibo4android.Status> newStatusList = null;
+			try {
+				newStatusList = weibo.getHomeTimeline(paging);
+				Log.d(LOG_TAG, "new status size : "+newStatusList.size());
+			} catch (WeiboException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return newStatusList;
+		}
+		
+		
+		
+	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		unbindService(connection);
+//		unbindService(connection);
 	}
 
-	class WeiboServiceConnection implements ServiceConnection {
-
-		@Override
-		public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-			WeiboBinder binder = (WeiboBinder) arg1;
-			binder.getService().startGetNewWeibo(statusList);
-
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-
-		}
-
-	}
+//	class WeiboServiceConnection implements ServiceConnection {
+//
+//		@Override
+//		public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+//			WeiboBinder binder = (WeiboBinder) arg1;
+//			binder.getService().startGetNewWeibo(statusList);
+//
+//		}
+//
+//		@Override
+//		public void onServiceDisconnected(ComponentName name) {
+//			// TODO Auto-generated method stub
+//
+//		}
+//
+//	}
 
 	/**
 	 * 初始化，处理已经授权和没有授权两种情况
@@ -148,7 +222,11 @@ public class WeiboListActivity extends ListActivity {
 			public void run() {
 
 				Uri uri = WeiboListActivity.this.getIntent().getData();
-				String oauth_verifier = uri.getQueryParameter("oauth_verifier");
+				String oauth_verifier = null;
+				if(null!=uri){
+					oauth_verifier = uri.getQueryParameter("oauth_verifier");
+				}
+				
 				if (null == oauth_verifier) {
 					// 已经授权
 					weibo.setOAuthAccessToken(OAuthConstant.getInstance()
@@ -241,23 +319,23 @@ public class WeiboListActivity extends ListActivity {
 
 		@Override
 		public void onClick(View v) {
-			int id = v.getId();
-			switch (id) {
-			case R.id.tweet:
-				Intent intent = new Intent("com.kidfolk.daogu.TWEET",
-						Uri.parse("daogu://TweetWeiboActivity"));
-				startActivityForResult(intent, TWEET_REQUEST);
-				break;
-			case R.id.refresh:
-				Paging paging = new Paging();
-				if (null == statusList) {
-
-				} else {
-					paging.setSinceId(statusList.get(0).getId());
-				}
-				getMyHomeTimeLine(paging);
-				break;
-			}
+//			int id = v.getId();
+//			switch (id) {
+//			case R.id.tweet:
+//				Intent intent = new Intent("com.kidfolk.daogu.TWEET",
+//						Uri.parse("daogu://TweetWeiboActivity"));
+//				startActivityForResult(intent, TWEET_REQUEST);
+//				break;
+//			case R.id.refresh:
+//				Paging paging = new Paging();
+//				if (null == statusList) {
+//
+//				} else {
+//					paging.setSinceId(statusList.get(0).getId());
+//				}
+//				getMyHomeTimeLine(paging);
+//				break;
+//			}
 
 		}
 
@@ -331,6 +409,17 @@ public class WeiboListActivity extends ListActivity {
 		menuInflater.inflate(R.menu.weibo_context_menu, menu);
 	}
 	
+	public static Intent createHomeIntent(Context context){
+		Intent intent = new Intent(context,WeiboListActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return intent;
+	}
+	
+	public List<Status> getCurrentStatusList(){
+		return this.statusList;
+	}
+	
 	private static final String LOG_TAG = "WeiboListActivity";
+	private ActionBar actionBar;
 
 }

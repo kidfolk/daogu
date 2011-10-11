@@ -62,6 +62,7 @@ public class DaoguAdapter extends BaseAdapter {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout linearLayout = (LinearLayout) inflater.inflate(
 				R.layout.row, null);
+		ImageView imageView = (ImageView) linearLayout.findViewById(R.id.profile_image);
 		TextView screenname = (TextView) linearLayout
 				.findViewById(R.id.screenname);
 		TextView create_at = (TextView) linearLayout
@@ -71,6 +72,8 @@ public class DaoguAdapter extends BaseAdapter {
 
 		Status status = list.get(position);
 
+		String profile_image_url = status.getUser().getProfileImageURL().toString();
+		setImageFromURL(imageView,profile_image_url);
 		screenname.setText(status.getUser().getScreenName());
 		create_at.setText(status.getCreatedAt().toLocaleString());
 		text.setText(status.getText());
@@ -81,26 +84,26 @@ public class DaoguAdapter extends BaseAdapter {
 
 		// see if has retweet
 		// RetweetDetails retweetDetials = status.getRetweeted_status();
-		Status retweetStatus = status.getRetweeted_status();
-		if (null != retweetStatus) {
-			// has retweet
-			// get retweet layout
-			LinearLayout retweet = (LinearLayout) linearLayout
-					.findViewById(R.id.retweet);
-			TextView subText = (TextView) linearLayout
-					.findViewById(R.id.subtext);
-			ImageView subpic = (ImageView) linearLayout
-					.findViewById(R.id.subpic);
+//		Status retweetStatus = status.getRetweeted_status();
+//		if (null != retweetStatus) {
+//			// has retweet
+//			// get retweet layout
+//			LinearLayout retweet = (LinearLayout) linearLayout
+//					.findViewById(R.id.retweet);
+//			TextView subText = (TextView) linearLayout
+//					.findViewById(R.id.subtext);
+//			ImageView subpic = (ImageView) linearLayout
+//					.findViewById(R.id.subpic);
 			// retweetStatus = retweetDetials.getRetweetStatus();
-			retweet.setVisibility(View.VISIBLE);
+//			retweet.setVisibility(View.VISIBLE);
 			// set retweet content
-			subText.setText("@" + retweetStatus.getUser().getScreenName() + ":"
-					+ retweetStatus.getText());
-			String thumbnail_pic_url = retweetStatus.getThumbnail_pic();
-			// set retweet pic
-			setImageFromURL(subpic, thumbnail_pic_url);
+//			subText.setText("@" + retweetStatus.getUser().getScreenName() + ":"
+//					+ retweetStatus.getText());
+//			String thumbnail_pic_url = retweetStatus.getThumbnail_pic();
+//			// set retweet pic
+//			setImageFromURL(subpic, thumbnail_pic_url);
 
-		}
+//		}
 		return linearLayout;
 	}
 

@@ -37,8 +37,7 @@ public class UserReaderAndWriter implements XMLReaderAndWriter<UserOAuth> {
 		FileInputStream fis = null;
 		try {
 			File file = context.getFileStreamPath(FILENAME);
-			boolean flag = file.createNewFile();
-			if (!flag) {
+			if(file.exists()){
 				// 文件已经存在
 				fis = context.openFileInput(FILENAME);
 				parser.setInput(fis, null);

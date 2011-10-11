@@ -5,4 +5,11 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@drawable/splash">
+    <ProgressBar
+	android:id="@+id/init_progressBar"
+	style="?android:attr/progressBarStyleHorizontal"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:max="5"/>  
 </LinearLayout>

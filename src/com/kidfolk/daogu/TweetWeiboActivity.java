@@ -1,5 +1,9 @@
 package com.kidfolk.daogu;
 
+import com.markupartist.android.widget.ActionBar;
+import com.markupartist.android.widget.ActionBar.IntentAction;
+import com.markupartist.android.widget.ActionBar.AbstractButtonAction;
+
 import weibo4android.Status;
 import weibo4android.WeiboException;
 import android.app.Activity;
@@ -24,10 +28,16 @@ public class TweetWeiboActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.tweet);
+		
+		ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar);
+		actionBar.setTitle("发微博");
+		actionBar.setHomeAction(new IntentAction(this,WeiboListActivity.createHomeIntent(this),R.drawable.home_default));
+		ButtonAction buttonAction = new ButtonAction(R.drawable.refresh);
+		actionBar.addAction(buttonAction);
 
 		// 根据id获得view
-		ImageButton backButton = (ImageButton) findViewById(R.id.back);
-		Button tweetButton = (Button) findViewById(R.id.tweet);
+//		ImageButton backButton = (ImageButton) findViewById(R.id.back);
+//		Button tweetButton = (Button) findViewById(R.id.tweet);
 		weiboContent = (EditText) findViewById(R.id.weiboContent);
 		//创建progressdialog
 		
@@ -38,7 +48,7 @@ public class TweetWeiboActivity extends Activity {
 				if(msg.what==0){
 					if(((Integer)msg.obj)==TWEET_START){
 						//开始发微博
-						progressDialog = ProgressDialog.show(TweetWeiboActivity.this, null, "正在发送微博……", true, false, null);
+						progressDialog = ProgressDialog.show(TweetWeiboActivity.this, null, "正在发送微博……", true, true, null);
 					}else if(((Integer)msg.obj)==TWEET_END){
 						progressDialog.dismiss();
 					}
@@ -48,59 +58,114 @@ public class TweetWeiboActivity extends Activity {
 
 		ActionListener listener = new ActionListener();
 		// 设置view的监听器
-		backButton.setOnClickListener(listener);
-		tweetButton.setOnClickListener(listener);
+//		backButton.setOnClickListener(listener);
+//		tweetButton.setOnClickListener(listener);
+	}
+	
+	 private Intent createHomeActivity() {
+		 Intent intent = new Intent(this,WeiboListActivity.class);
+		 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return intent;
+	}
+
+	class ButtonAction extends AbstractButtonAction{
+
+		public ButtonAction(int drawable) {
+			super(drawable);
+		}
+
+		@Override
+		public void performAction(View view) {
+			//发布微博线程
+			Thread tweetThread = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					
+					Message msg = new Message();
+					msg.obj = TWEET_START;
+					msg.what = 0;
+					//发送一个消息给ui线程，显示progressdialog
+					TweetWeiboActivity.this.handler.sendMessage(msg);
+					String content = weiboContent.getText().toString();
+					Status status = null;
+					if (content.equals("")) {
+						// 微博内容为空
+					} else {
+						try {
+							status = OAuthConstant.getInstance().getWeibo()
+									.updateStatus(content);
+							if(null!=status){
+								Message msg1 = new Message();
+								msg1.obj = TWEET_END;
+								msg1.what = 0;
+								TweetWeiboActivity.this.handler.sendMessage(msg1);
+								TweetWeiboActivity.this.setResult(RESULT_OK);
+								TweetWeiboActivity.this.finish();
+							}
+						} catch (WeiboException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+				}
+			});
+			tweetThread.start();
+			
+		}
+		
 	}
 
 	class ActionListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
-			int id = v.getId();
-			switch (id) {
-			case R.id.back:
-				TweetWeiboActivity.this.finish();
-				break;
-			case R.id.tweet:
-				//发布微博线程
-				Thread tweetThread = new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						
-						Message msg = new Message();
-						msg.obj = TWEET_START;
-						msg.what = 0;
-						//发送一个消息给ui线程，显示progressdialog
-						TweetWeiboActivity.this.handler.sendMessage(msg);
-						String content = weiboContent.getText().toString();
-						Status status = null;
-						if (content.equals("")) {
-							// 微博内容为空
-						} else {
-							try {
-								status = OAuthConstant.getInstance().getWeibo()
-										.updateStatus(content);
-								if(null!=status){
-									Message msg1 = new Message();
-									msg1.obj = TWEET_END;
-									msg1.what = 0;
-									TweetWeiboActivity.this.handler.sendMessage(msg1);
-									TweetWeiboActivity.this.setResult(RESULT_OK);
-									TweetWeiboActivity.this.finish();
-								}
-							} catch (WeiboException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						
-					}
-				});
-				tweetThread.start();
-				
-				break;
-			}
+//			int id = v.getId();
+//			switch (id) {
+//			case R.id.back:
+//				TweetWeiboActivity.this.finish();
+//				break;
+//			case R.id.tweet:
+//				//发布微博线程
+//				Thread tweetThread = new Thread(new Runnable() {
+//					
+//					@Override
+//					public void run() {
+//						
+//						Message msg = new Message();
+//						msg.obj = TWEET_START;
+//						msg.what = 0;
+//						//发送一个消息给ui线程，显示progressdialog
+//						TweetWeiboActivity.this.handler.sendMessage(msg);
+//						String content = weiboContent.getText().toString();
+//						Status status = null;
+//						if (content.equals("")) {
+//							// 微博内容为空
+//						} else {
+//							try {
+//								status = OAuthConstant.getInstance().getWeibo()
+//										.updateStatus(content);
+//								if(null!=status){
+//									Message msg1 = new Message();
+//									msg1.obj = TWEET_END;
+//									msg1.what = 0;
+//									TweetWeiboActivity.this.handler.sendMessage(msg1);
+//									TweetWeiboActivity.this.setResult(RESULT_OK);
+//									TweetWeiboActivity.this.finish();
+//								}
+//							} catch (WeiboException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//						}
+//						
+//					}
+//				});
+//				tweetThread.start();
+//				
+//				break;
+//			}
 
 		}
 
